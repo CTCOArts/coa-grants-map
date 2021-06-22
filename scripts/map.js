@@ -187,86 +187,10 @@ $(window).on('load', function() {
         + getSetting('_pointsLegendIcon') + '"></i></span>');
     }
 
-    var displayTable = getSetting('_displayTable') == 'on' ? true : false;
-
-    // Display table with active points if specified
-    var columns = getSetting('_tableColumns').split(',')
-                  .map(Function.prototype.call, String.prototype.trim);
-
-    if (displayTable && columns.length > 1) {
-      tableHeight = trySetting('_tableHeight', 40);
-      if (tableHeight < 10 || tableHeight > 90) {tableHeight = 40;}
-      $('#map').css('height', (100 - tableHeight) + 'vh');
-      map.invalidateSize();
-
-      // Set background (and text) color of the table header
-      var colors = getSetting('_tableHeaderColor').split(',');
-      if (colors[0] != '') {
-        $('table.display').css('background-color', colors[0]);
-        if (colors.length >= 2) {
-          $('table.display').css('color', colors[1]);
-        }
-      }
-
-      // Update table every time the map is moved/zoomed or point layers are toggled
-      map.on('moveend', updateTable);
-      map.on('layeradd', updateTable);
-      map.on('layerremove', updateTable);
-
-      // Clear table data and add only visible markers to it
-      function updateTable() {
-        var pointsVisible = [];
-        for (i in points) {
-          if (map.hasLayer(layers[points[i].Group]) &&
-              map.getBounds().contains(L.latLng(points[i].Latitude, points[i].Longitude))) {
-            pointsVisible.push(points[i]);
-          }
-        }
-
-        tableData = pointsToTableData(pointsVisible);
-
-        table.clear();
-        table.rows.add(tableData);
-        table.draw();
-      }
-
-      // Convert Leaflet marker objects into DataTable array
-      function pointsToTableData(ms) {
-        var data = [];
-        for (i in ms) {
-          var a = [];
-          for (j in columns) {
-            a.push(ms[i][columns[j]]);
-          }
-          data.push(a);
-        }
-        return data;
-      }
-
-      // Transform columns array into array of title objects
-      function generateColumnsArray() {
-        var c = [];
-        for (i in columns) {
-          c.push({title: columns[i]});
-        }
-        return c;
-      }
-
-      // Initialize DataTable
-      var table = $('#maptable').DataTable({
-        paging: false,
-        scrollCollapse: true,
-        scrollY: 'calc(' + tableHeight + 'vh - 40px)',
-        info: false,
-        searching: false,
-        columns: generateColumnsArray(),
-      });
-    }
-
     // Add year filter
     addYearFilter(markerArray, layers, multilayerClusterSupport);
 
-    completePoints = true;  
+    completePoints = true;
     return group;
   }
 
@@ -702,7 +626,90 @@ $(window).on('load', function() {
       $(this).prepend(legendIcon);
     });
 
+
+    var addTable = function(points) {
+      var displayTable = getSetting('_displayTable') == 'on' ? true : false;
+
+      // Display table with active points if specified
+      var columns = getSetting('_tableColumns').split(',')
+                    .map(Function.prototype.call, String.prototype.trim);
+
+      if (displayTable && columns.length > 1) {
+        tableHeight = trySetting('_tableHeight', 40);
+        if (tableHeight < 10 || tableHeight > 90) {tableHeight = 40;}
+        $('#map').css('height', (100 - tableHeight) + 'vh');
+        map.invalidateSize();
+
+        // Set background (and text) color of the table header
+        var colors = getSetting('_tableHeaderColor').split(',');
+        if (colors[0] != '') {
+          $('table.display').css('background-color', colors[0]);
+          if (colors.length >= 2) {
+            $('table.display').css('color', colors[1]);
+          }
+        }
+
+        // Clear table data and add only visible markers to it
+        function updateTable() {
+          var pointsVisible = [];
+          var years = getCheckedYears();   // Checked years
+
+          for (var i in points) {
+            if (years.indexOf( points[i].Year ) >= 0 &&
+                map.hasLayer(layers[points[i].Group]) &&
+                map.getBounds().contains(L.latLng(points[i].Latitude, points[i].Longitude))) {
+              pointsVisible.push(points[i]);
+            }
+          }
+
+          tableData = pointsToTableData(pointsVisible);
+
+          table.clear();
+          table.rows.add(tableData);
+          table.draw();
+        }
+
+        // Convert Leaflet marker objects into DataTable array
+        function pointsToTableData(ms) {
+          var data = [];
+          for (i in ms) {
+            var a = [];
+            for (j in columns) {
+              a.push(ms[i][columns[j]]);
+            }
+            data.push(a);
+          }
+          return data;
+        }
+
+        // Transform columns array into array of title objects
+        function generateColumnsArray() {
+          var c = [];
+          for (i in columns) {
+            c.push({title: columns[i]});
+          }
+          return c;
+        }
+
+        // Initialize DataTable
+        var table = $('#maptable').DataTable({
+          paging: false,
+          scrollCollapse: true,
+          scrollY: 'calc(' + tableHeight + 'vh - 30px)',
+          info: false,
+          searching: false,
+          columns: generateColumnsArray(),
+        });
+      }
+
+      // Update table every time the map is moved/zoomed or point layers are toggled
+      map.on('moveend', updateTable);
+      $('input').on('change', updateTable);
+    }
+
+
     // When all processing is done, hide the loader and make the map visible
+    addTable(points);
     showMap();
 
     function showMap() {
@@ -744,6 +751,7 @@ $(window).on('load', function() {
         };
 
         togglePolygonLabels();
+        //setTimeout( addTable, 500);
       } else {
         setTimeout(showMap, 50);
       }
@@ -751,7 +759,6 @@ $(window).on('load', function() {
 
     // Add Google Analytics if the ID exists
     var ga = getSetting('_googleAnalytics');
-    console.log(ga)
     if ( ga && ga.length >= 10 ) {
       var gaScript = document.createElement('script');
       gaScript.setAttribute('src','https://www.googletagmanager.com/gtag/js?id=' + ga);
