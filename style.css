@@ -38,7 +38,7 @@ h6 {
 }
 
 .leaflet-control-custom {
-  padding: 6px 8px;
+  padding: 10px 12px;
   background: white;
   box-shadow: 0 1px 5px rgba(0,0,0,0.4);
   color: #333;
@@ -264,8 +264,8 @@ select {
 span.legend-arrow {
   color: rgb(238, 238, 238);
   position: absolute;
-  right: 8px;
-  top: 5px;
+  right: 12px;
+  top: 12px;
 }
 
 span.legend-icon {
@@ -287,4 +287,40 @@ span.legend-icon {
 
 .ladder form, .ladder div {
   display: block;
+}
+
+#points-legend {
+  padding: 12px 14px !important;
+}
+
+.leaflet-popup {
+  bottom: 15px !important;
+}
+
+#year-filter label:last-of-type {
+  margin-bottom: 10px;
+}
+
+#year-filter h6 {
+  margin-bottom: 3px;
+}
+
+#year-filter h6:hover .legend-arrow {
+  color: #333;
+  font-weight: 1.1em;
+}
+
+label:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.leaflet-control {
+  border-radius: 2px !important;
+  border: none !important;
+  box-shadow: 0px 0px 4px 2px rgba( 0, 0, 0, 0.2 ) !important;
+}
+
+input[type="checkbox"] {
+  margin-right: 4px;
 }

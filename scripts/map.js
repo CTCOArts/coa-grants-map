@@ -131,6 +131,9 @@ $(window).on('load', function() {
           (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
           point['Description']);
 
+        marker.options.Year = point.Year;
+        marker.options.Group = point.Group;
+
         if (layers !== undefined && layers.length !== 1) {
           marker.addTo(layers[point.Group]);
         }
@@ -141,6 +144,7 @@ $(window).on('load', function() {
 
     var group = L.featureGroup(markerArray);
     var clusters = (getSetting('_markercluster') === 'on') ? true : false;
+    var multilayerClusterSupport;
 
     // if layers.length === 0, add points to map instead of layer
     if (layers === undefined || layers.length === 0) {
@@ -177,7 +181,7 @@ $(window).on('load', function() {
       }
     }
 
-    $('#points-legend').prepend('<h6 class="pointer">' + getSetting('_pointsLegendTitle') + '</h6>');
+    $('#points-legend').prepend('<h6>' + getSetting('_pointsLegendTitle') + '</h6>');
     if (getSetting('_pointsLegendIcon') != '') {
       $('#points-legend h6').prepend('<span class="legend-icon"><i class="fas '
         + getSetting('_pointsLegendIcon') + '"></i></span>');
@@ -259,7 +263,10 @@ $(window).on('load', function() {
       });
     }
 
-    completePoints = true;
+    // Add year filter
+    addYearFilter(markerArray, layers, multilayerClusterSupport);
+
+    completePoints = true;  
     return group;
   }
 
@@ -700,8 +707,8 @@ $(window).on('load', function() {
 
     function showMap() {
       if (completePoints && completePolylines && completePolygons) {
-        $('.ladder h6').append('<span class="legend-arrow"><i class="fas fa-chevron-down"></i></span>');
-        $('.ladder h6').addClass('minimize');
+        //$('.ladder h6').append('<span class="legend-arrow"><i class="fas fa-chevron-down"></i></span>');
+        //$('.ladder h6').addClass('minimize');
 
         for (i in allPolygonLegends) {
           if (getPolygonSetting(i, '_polygonsLegendIcon') != '') {
@@ -709,7 +716,7 @@ $(window).on('load', function() {
               '<span class="legend-icon"><i class="fas ' + getPolygonSetting(i, '_polygonsLegendIcon') + '"></i></span>');
           }
         }
-
+/*
         $('.ladder h6').click(function() {
           if ($(this).hasClass('minimize')) {
             $('.ladder h6').addClass('minimize');
@@ -724,9 +731,9 @@ $(window).on('load', function() {
               .removeClass('fa-chevron-up')
               .addClass('fa-chevron-down');
           }
-        });
+        }); */
 
-        $('.ladder h6').first().click();
+        //$('.ladder h6').first().click();
 
         $('#map').css('visibility', 'visible');
         $('.loader').hide();
