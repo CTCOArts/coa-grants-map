@@ -6,6 +6,14 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
+function getCheckedYears() {
+  var arr = [];
+  $('#year-filter input:checked').each( function() {
+    arr.push( $(this).attr('year'));
+  });
+  return arr;
+}
+
 /*
  * Function to add filter checkboxes to the legend
  */
@@ -31,10 +39,7 @@ var addYearFilter = function(markers, layers, mcs) { // mcs = multilayer cluster
   $('#year-filter input, .leaflet-control-layers-overlays').on('change', function() {
 
     // Create a list of all checked years
-    var checkedYears = [];
-    $('#year-filter input:checked').each( function() {
-      checkedYears.push( $(this).attr('year'))
-    })
+    var checkedYears = getCheckedYears();
 
     // Remove markers (layers) whose year not in list
     mcs.removeLayers(
