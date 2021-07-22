@@ -1,7 +1,7 @@
-# Connecticut Office of the Arts grants map
+# Connecticut Office of the Arts institutional grants map
 
-## Live links (replace with your own)
-- Leaflet Map https://jackdougherty.github.io/coa-grants-map/
+## Live links
+- Leaflet Map https://ctcoarts.github.io/coa-grants-map/
 - Google Sheet https://docs.google.com/spreadsheets/d/1Knh8x9U3COUSrvsZpTxdePIUDlQmgvl5jDLdTioS5HA/edit#gid=0
 
 ## Create your own
