@@ -247,10 +247,18 @@ div.dataTables_scrollHead table.display {
   color: #eee;
 }
 
+th, td {
+  font-size: 0.95em;
+}
+
 th {
   text-align: left;
   padding-left: 5px !important;
   font-weight: normal !important;
+}
+
+th:last-child, td:last-child {
+  text-align: right;
 }
 
 select {

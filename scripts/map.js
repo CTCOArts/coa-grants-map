@@ -128,8 +128,9 @@ $(window).on('load', function() {
       if (point.Latitude !== '' && point.Longitude !== '') {
         var marker = L.marker([point.Latitude, point.Longitude], {icon: icon})
           .bindPopup("<b>" + point['Name'] + '</b><br>' +
-          (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
-          point['Description']);
+          (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '')
+          + point['OrigProgram'] + '<br>'
+          + point['Description']);
 
         marker.options.Year = point.Year;
         marker.options.Group = point.Group;
@@ -671,24 +672,30 @@ $(window).on('load', function() {
 
         // Convert Leaflet marker objects into DataTable array
         function pointsToTableData(ms) {
-          var data = [];
-          for (i in ms) {
-            var a = [];
-            for (j in columns) {
-              a.push(ms[i][columns[j]]);
-            }
-            data.push(a);
-          }
-          return data;
+
+          return ms.map(function(x) {
+            return columns.map(function(c) {
+              return x[c];
+            });
+          });
+
         }
 
         // Transform columns array into array of title objects
         function generateColumnsArray() {
-          var c = [];
-          for (i in columns) {
-            c.push({title: columns[i]});
+
+          // Rename columns
+          const col2title = {
+            'Group': 'Grant Type',
+            'Year': 'FY',
+            'Name': 'Name of Grantee',
+            'Description': 'Award Amount'
           }
-          return c;
+
+          return columns.map(function(c) {
+            return { 'title': col2title[c] ? col2title[c] : c }
+          });
+
         }
 
         // Initialize DataTable
